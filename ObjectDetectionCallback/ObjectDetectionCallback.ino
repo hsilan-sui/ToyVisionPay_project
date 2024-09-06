@@ -43,8 +43,8 @@ RTSP rtsp;
 StreamIO videoStreamer(1, 1);
 StreamIO videoStreamerNN(1, 1);
 
-char ssid[] = "suihsilan-5G";    // your network SSID (name)
-char pass[] = "0474739371";        // your network password
+char ssid[] = "";    // your network SSID (name)
+char pass[] = "";        // your network password
 int status = WL_IDLE_STATUS;
 
 IPAddress ip;
