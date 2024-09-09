@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>購物車</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <style>
+      /* 設置購物車列表項目的字體大小 */
+      .list-group-item {
+        font-size: 1.5rem; /* 調整字體大小，1.5rem 相當於 24px，根據需求調整 */
+      }
+
+      /* 調整標題字體大小 */
+      h1 {
+        font-size: 2rem; /* 調整標題的字體大小 */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>你的購物車</h1>
+      <ul id="cart-list" class="list-group">
+        <!-- 購物車產品列表 -->
+      </ul>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+      // 連接到 WebSocket
+      var socket = io.connect("http://localhost:5001"); // 確保端口和伺服器一致
+      socket.on("connect", function () {
+        console.log("WebSocket 連接成功！");
+      });
+
+      // 監聽購物車更新
+      socket.on("update_cart", function (data) {
+        console.log("購物車更新:", data);
+        var cartList = document.getElementById("cart-list");
+        cartList.innerHTML = ""; // 清空列表
+
+        // 如果購物車為空
+        if (Object.keys(data).length === 0) {
+          var emptyItem = document.createElement("li");
+          emptyItem.className = "list-group-item";
+          emptyItem.textContent = "購物車為空";
+          cartList.appendChild(emptyItem);
+        } else {
+          // 將產品添加到購物車
+          for (var product in data) {
+            var listItem = document.createElement("li");
+            listItem.className = "list-group-item";
+            listItem.textContent = product + " x " + data[product];
+            cartList.appendChild(listItem);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
