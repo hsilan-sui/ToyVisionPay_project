@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO, emit
@@ -6,6 +7,25 @@ import json
 
 app = Flask(__name__)  # 創建 Flask 應用
 CORS(app)  # 允許跨域請求
+
+# 設置上傳文件夾
+UPLOAD_FOLDER = 'static/uploads/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# 配置 PostgreSQL 資料庫
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/pokemon_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# 初始化資料庫和 SocketIO
+db = SQLAlchemy(app)
+
+# 定義 Product 模型對應 PostgreSQL 資料表
+class Product(db.Model):
+    __tablename__ = 'products'  # 資料表名稱
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)  # 商品英文名稱
+    price = db.Column(db.Numeric(10, 2), nullable=False)  # 商品價格（對應PostgreSQL的MONEY類型）
+    image_path = db.Column(db.String(255), nullable=False)  # 儲存圖片路徑
 
 # mqtt client 設置
 app.config['MQTT_BROKER_URL'] = 'mqttgo.io'  # MQTT Broker 地址
@@ -48,24 +68,40 @@ def handle_mqtt_message(client, userdata, message):
         received_products = {}
 
         # 解析 JSON 訊息
-        msg_json = json.loads(payload)
+        msg_json = json.loads(payload) #解析成python 字典
 
-        # 如果訊息表示無物品，顯示空購物車
+        # 處理特殊情況：無檢測到物品 ｜如果訊息表示無物品，顯示空購物車
         if "message" in msg_json and msg_json["message"] == "no objects detected":
+            # 通過Socket.IO即時更新前端購物車的內容
             socketio.emit('update_cart', received_products)
         else:
-            # 更新購物車商品數量
-            for key, value in msg_json.items():
-                name = value.get('name')
-                translated_name = pokemon_translation.get(name, name)  # 將英文名稱轉換為中文，沒有對應的名稱則保留原樣
-                if translated_name in received_products:
-                    received_products[translated_name] += 1  # 增加商品數量
-                else:
-                    received_products[translated_name] = 1  # 首次添加該商品
-            
-            # 通過 WebSocket 即時更新前端
-            socketio.emit('update_cart', received_products)
-        
+            # 在應用上下文中查詢資料庫
+            with app.app_context():
+                    # 更新購物車商品數量和價格
+                    # msg_json.items() 會返回這個字典的每個鍵值對，
+                    # key 是每個項目的鍵（例如 "product0"）
+                    # value 是包含商品訊息的字典（如名稱和其他資訊）
+                    #  {"product1":{"name":"charmander","confidence":89}}
+                for key, value in msg_json.items():
+                    english_name = value.get('name')
+                    translated_name = pokemon_translation.get(english_name, english_name)  # 將英文名稱轉換為中文
+                    product = Product.query.filter_by(name=english_name).first()  # 查詢資料庫中的價格
+
+                    if product:
+                        price = float(product.price)
+                        image_path = product.image_path  # 從資料庫中提取圖片路徑
+                        if translated_name in received_products:
+                            received_products[translated_name]['quantity'] += 1
+                        else:
+                            received_products[translated_name] = {
+                                'quantity': 1, 
+                                'price': price,
+                                'image_path': image_path
+                            }
+
+                # 通過 WebSocket 即時更新前端
+                socketio.emit('update_cart', received_products)
+
     except json.JSONDecodeError:
         print("無法解析收到的 JSON 訊息")
 
