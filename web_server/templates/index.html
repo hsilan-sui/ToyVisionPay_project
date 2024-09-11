@@ -140,15 +140,15 @@
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script>
       // 連接到 WebSocket
-      var socket = io.connect("http://localhost:5001"); // 確保端口和伺服器一致
+      const socket = io.connect("http://localhost:5001"); // 確保端口和伺服器一致
       socket.on("connect", function () {
         console.log("WebSocket 連接成功！");
       });
       // 監聽購物車更新
       socket.on("update_cart", function (data) {
         console.log("購物車更新:", data);
-        var cartList = document.getElementById("cart-list");
-        var totalAmount = 0; // 初始化總金額
+        const cartList = document.getElementById("cart-list");
+        let totalAmount = 0; // 初始化總金額
         cartList.innerHTML = ""; // 清空列表
         // 如果購物車為空
         if (Object.keys(data).length === 0) {
@@ -158,9 +158,9 @@
             "總金額: $0.00 元";
         } else {
           // 將產品和價格添加到購物車
-          for (var product in data) {
-            var productData = data[product];
-            var productItem = `
+          for (let product in data) {
+            let productData = data[product];
+            let productItem = `
               <div class="cart-item">
                 <img src="/static/${
                   productData.image_path
