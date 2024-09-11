@@ -172,9 +172,12 @@
                   }</p>
                 </div>
                 <div class="cart-item-actions">
-                  <p class="badge rounded-pill bg-light text-dark p-2 price-large">價格: $${data[
-                    product
-                  ].price.toFixed(2)}</p>
+                  <p class="badge rounded-pill bg-light text-dark p-2 total-large">單價 ${
+                    productData.price
+                  } 元  X  ${productData.quantity}/隻</p>
+                  <p class="badge rounded-pill bg-light text-dark p-2 price-large">價格: $${(
+                    productData.price * productData.quantity
+                  ).toFixed(2)}</p>
                   <p class="remove-item" onclick="removeItem('${product}')">刪除</p>
                 </div>
               </div>
