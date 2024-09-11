@@ -15,6 +15,8 @@
 
 ## <a href="https://www.youtube.com/watch?v=b0CbNcgBwGQ" target="_blank"><img src="./aiot_visionpay.png" alt="公仔商品辨識結帳" width="550" height="300" border="3px" /></a>
 
+也可以直接點擊於此 [公仔商品辨識結帳](https://www.youtube.com/watch?v=b0CbNcgBwGQ)
+
 ---
 
 ## 專案初始化
