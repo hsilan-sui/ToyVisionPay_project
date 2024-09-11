@@ -1,20 +1,11 @@
 # 專案大綱
 
-- 剛結束健行科大 AIOT 人工智慧既實戰班，就想把 AI 這塊和物聯網串連起來，於是以自己手邊有的寶可夢公仔為資料，做公仔商品辨識結帳系統，以下是我四大階段：
-  - 第一階段=> AI：收集資料 與 YOLOV4-TINY 訓練自己的模型
-  - 第二階段=> IOT: AME882
-  - 第三階段=> 後端： FLASK
-  - 第四階段=> 前端： 購物車顯示與結帳
+- 剛從健行科大『AIoT 物聯網暨人工智慧工程師實戰班』結訓，就想說把 AI 這塊和 IOT 物聯網串連起來，於是就以自己手邊有的寶可夢公仔為 AI 模型訓練的資料，做一個商品辨識結帳系統，以下是我的專案架構 以及 AI 模型訓練流程：
+  - ![專案架構圖](./aiot_visionpay.png)
+  - AI 模型訓練流程
+    - ![AI 模型訓練流程](./ai_training_flow.png)
 
-## AI 模型訓練 與 IOT 的結合
-
-- 我把自己實作的詳細筆記寫在:
-
-  - [(AI 模型訓練)如何訓練並使用自己建好的 YOLOv4-tiny 模型](https://hackmd.io/ImQCIrtrQquPfkxcwYCUxw)
-  - [IOT:AMB882 模型轉檔 使用自己建好的模型](https://hackmd.io/QMJgo3SaQw27v_8IS0a3cw?view)
-
-- AI 模型訓練流程與架構圖
-  - ![ai_training_flow.png](./ai_training_flow.png)
+## DEMO 成果(YT)
 
 ## 專案初始化
 
@@ -30,5 +21,8 @@ $ source web\_server/bin/activate
 $ cd web_server
 $ touch server.py
 $ flask --app server run --debug #runserver 你要在web_server底下執行
+#or
+$ flask --app server run --port 5001
+
 
 ```
